@@ -10,7 +10,7 @@ let previousLandmarks = null;
 
 // 0 = no smoothing
 // 1 = extremely smooth but laggy
-const SMOOTHING = 0.8;
+const SMOOTHING = 0.2;
 
 export async function initFaceTracking() {
 
