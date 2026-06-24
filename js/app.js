@@ -27,16 +27,6 @@ let glassesEnabled = false;
 
 async function updateCamera() {
     await startCamera(video, currentFacingMode);
-    await initAR(
-        threeCanvas
-    );
-
-    updateGlasses(
-        0,
-        0,
-        1,
-        0
-    );
 
     if (currentFacingMode === "user") {
         video.style.transform = "scaleX(-1)";
@@ -80,7 +70,43 @@ async function startFaceTracking() {
                 const landmarks =
                     result.faceLandmarks[0];
 
-                // Draw glasses
+                const leftEye =
+                    landmarks[33];
+
+                const rightEye =
+                    landmarks[263];
+
+                const leftX =
+                    leftEye.x * canvas.width;
+
+                const leftY =
+                    leftEye.y * canvas.height;
+
+                const rightX =
+                    rightEye.x * canvas.width;
+
+                const rightY =
+                    rightEye.y * canvas.height;
+
+                const centerX =
+                    (leftX + rightX) / 2;
+
+                const centerY =
+                    (leftY + rightY) / 2;
+
+                const eyeDistance =
+                    Math.hypot(
+                        rightX - leftX,
+                        rightY - leftY
+                    );
+
+                const angle =
+                    Math.atan2(
+                        rightY - leftY,
+                        rightX - leftX
+                    );
+
+                // PNG glasses
                 if (glassesEnabled) {
                     drawGlasses(
                         canvas,
@@ -88,7 +114,15 @@ async function startFaceTracking() {
                     );
                 }
 
-                // Draw debug dots only when enabled
+                // 3D glasses
+                updateGlasses(
+                    centerX,
+                    centerY,
+                    eyeDistance,
+                    angle
+                );
+
+                // Debug dots
                 if (debugEnabled) {
                     drawLandmarks(
                         canvas,
@@ -146,8 +180,15 @@ window.addEventListener(
     "DOMContentLoaded",
     async () => {
         try {
+
             await updateCamera();
+
+            await initAR(
+                threeCanvas
+            );
+
             await startFaceTracking();
+
         }
         catch (error) {
             console.error(

@@ -8,89 +8,143 @@ let glasses;
 
 export async function initAR(canvas) {
 
-    scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(
-        45,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
+scene = new THREE.Scene();
+
+camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+
+camera.position.z = 5;
+
+renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true
+});
+
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
+);
+
+const ambientLight =
+    new THREE.AmbientLight(
+        0xffffff,
+        2
     );
 
-    camera.position.z = 5;
+scene.add(ambientLight);
 
-    renderer = new THREE.WebGLRenderer({
-        canvas,
-        alpha: true,
-        antialias: true
-    });
+const loader =
+    new GLTFLoader();
 
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
+const gltf =
+    await loader.loadAsync(
+        "./assets/models/sunglass1.glb"
     );
 
-    const ambientLight =
-        new THREE.AmbientLight(
-            0xffffff,
-            2
-        );
+glasses = gltf.scene;
 
-    scene.add(ambientLight);
+// Initial scale
+glasses.scale.set(
+    0.5,
+    0.5,
+    0.5
+);
 
-    const loader =
-        new GLTFLoader();
+scene.add(glasses);
 
-    const gltf =
-        await loader.loadAsync(
-            "./assets/models/sunglass1.glb"
-        );
+console.log("GLB Loaded");
 
-    glasses = gltf.scene;
+window.addEventListener(
+    "resize",
+    onResize
+);
 
-    glasses.scale.set(
-        1,
-        1,
-        1
-    );
+animate();
 
-    scene.add(glasses);
 
-    console.log("GLB Loaded");
+}
 
-    animate();
+function onResize() {
+
+
+camera.aspect =
+    window.innerWidth /
+    window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
+
+
 }
 
 function animate() {
 
-    requestAnimationFrame(
-        animate
-    );
 
-    renderer.render(
-        scene,
-        camera
-    );
+requestAnimationFrame(
+    animate
+);
+
+renderer.render(
+    scene,
+    camera
+);
+
+
 }
 
 export function updateGlasses(
-    x,
-    y,
-    scale,
-    rotation
+centerX,
+centerY,
+eyeDistance,
+angle
 ) {
-    if (!glasses) return;
+if (!glasses) return;
 
-    glasses.position.set(
-        x,
-        y,
-        0
-    );
 
-    glasses.scale.setScalar(
-        scale
-    );
+// Convert screen coordinates to Three.js coordinates
 
-    glasses.rotation.z =
-        rotation;
+const x =
+    (centerX / window.innerWidth) * 2 - 1;
+
+const y =
+    -(centerY / window.innerHeight) * 2 + 1;
+
+glasses.position.set(
+    x * 3,
+    y * 2,
+    0
+);
+
+// Scale based on eye distance
+
+const scale =
+    eyeDistance * 0.01;
+
+glasses.scale.setScalar(
+    scale
+);
+
+// Rotate based on head tilt
+
+glasses.rotation.z =
+    -angle;
+
+
 }
