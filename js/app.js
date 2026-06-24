@@ -7,11 +7,14 @@ import {
 const video = document.getElementById("camera");
 const canvas = document.getElementById("overlay");
 const switchButton = document.getElementById("switch-camera-btn");
+const debugButton = document.getElementById("debug-btn");
 
 const ctx = canvas.getContext("2d");
 
 let currentFacingMode = "user";
 let faceLandmarker = null;
+
+let debugEnabled = true;
 
 async function updateCamera() {
     await startCamera(video, currentFacingMode);
@@ -55,10 +58,12 @@ async function startFaceTracking() {
                 result.faceLandmarks &&
                 result.faceLandmarks.length > 0
             ) {
-                drawLandmarks(
-                    canvas,
-                    result.faceLandmarks[0]
-                );
+                if (debugEnabled) {
+                    drawLandmarks(
+                        canvas,
+                        result.faceLandmarks[0]
+                    );
+                }
             }
         }
 
@@ -68,6 +73,29 @@ async function startFaceTracking() {
 
     track();
 }
+
+debugButton.addEventListener(
+    "click",
+    () => {
+
+        debugEnabled =
+            !debugEnabled;
+
+        debugButton.textContent =
+            debugEnabled
+                ? "Hide Dots"
+                : "Show Dots";
+
+        if (!debugEnabled) {
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+        }
+    }
+);
 
 window.addEventListener(
     "DOMContentLoaded",
