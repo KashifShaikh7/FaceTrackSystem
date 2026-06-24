@@ -6,6 +6,12 @@ from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm";
 
 let faceLandmarker;
 
+let previousLandmarks = null;
+
+// 0 = no smoothing
+// 1 = extremely smooth but laggy
+const SMOOTHING = 0.8;
+
 export async function initFaceTracking() {
 
     const vision = await FilesetResolver.forVisionTasks(
@@ -31,10 +37,7 @@ export async function initFaceTracking() {
     return faceLandmarker;
 }
 
-export function drawLandmarks(
-    canvas,
-    landmarks
-) {
+export function drawLandmarks(canvas, landmarks) {
 
     const ctx = canvas.getContext("2d");
 
@@ -45,28 +48,49 @@ export function drawLandmarks(
         canvas.height
     );
 
-    if (!landmarks) return;
+    if (!landmarks) {
+        previousLandmarks = null;
+        return;
+    }
 
-    ctx.fillStyle = "#00ff00";
+    const smoothedLandmarks = [];
 
-    for (const point of landmarks) {
+    for (let i = 0; i < landmarks.length; i++) {
 
-        const x =
-            point.x * canvas.width;
+        const current = landmarks[i];
 
-        const y =
-            point.y * canvas.height;
+        let x = current.x;
+        let y = current.y;
+
+        if (previousLandmarks) {
+
+            x =
+                previousLandmarks[i].x * SMOOTHING +
+                current.x * (1 - SMOOTHING);
+
+            y =
+                previousLandmarks[i].y * SMOOTHING +
+                current.y * (1 - SMOOTHING);
+        }
+
+        smoothedLandmarks.push({
+            x,
+            y
+        });
 
         ctx.beginPath();
 
         ctx.arc(
-            x,
-            y,
+            x * canvas.width,
+            y * canvas.height,
             2,
             0,
             Math.PI * 2
         );
 
+        ctx.fillStyle = "#00ff00";
         ctx.fill();
     }
+
+    previousLandmarks = smoothedLandmarks;
 }
