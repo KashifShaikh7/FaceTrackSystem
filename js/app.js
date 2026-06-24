@@ -62,8 +62,8 @@ async function startFaceTracking() {
             }
         }
 
-        // ~30 FPS
-        setTimeout(track, 33);
+        // ~FrameRate FPS
+        requestAnimationFrame(track);
     };
 
     track();
