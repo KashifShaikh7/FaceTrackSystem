@@ -3,6 +3,7 @@ import {
     initFaceTracking,
     drawLandmarks
 } from "./faceTracking.js";
+import { drawGlasses } from "./glasses.js";
 
 const video = document.getElementById("camera");
 const canvas = document.getElementById("overlay");
@@ -14,7 +15,7 @@ const ctx = canvas.getContext("2d");
 let currentFacingMode = "user";
 let faceLandmarker = null;
 
-let debugEnabled = true;
+let debugEnabled = false;
 
 async function updateCamera() {
     await startCamera(video, currentFacingMode);
@@ -58,10 +59,20 @@ async function startFaceTracking() {
                 result.faceLandmarks &&
                 result.faceLandmarks.length > 0
             ) {
+                const landmarks =
+                    result.faceLandmarks[0];
+
+                // Draw glasses
+                drawGlasses(
+                    canvas,
+                    landmarks
+                );
+
+                // Draw debug dots only when enabled
                 if (debugEnabled) {
                     drawLandmarks(
                         canvas,
-                        result.faceLandmarks[0]
+                        landmarks
                     );
                 }
             }
