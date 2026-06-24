@@ -121,7 +121,7 @@ if (!glasses) return;
 // Convert screen coordinates to Three.js coordinates
 
 const x =
-    (centerX / window.innerWidth) * 2 - 1;
+    -((centerX / window.innerWidth) * 2 - 1);
 
 const y =
     -(centerY / window.innerHeight) * 2 + 1;
