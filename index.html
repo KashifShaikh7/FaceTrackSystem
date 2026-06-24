@@ -8,20 +8,18 @@
 </head>
 <body>
     <div id="app">
-        <header class="top-bar">
-            <h1>Face AR</h1>
-        </header>
-
-        <main class="camera-container">
+        <div class="camera-container">
             <video id="camera" autoplay playsinline muted></video>
-        </main>
+            <canvas id="overlay"></canvas>
+        </div>
 
         <footer class="bottom-bar">
-            <button id="switch-camera-btn">Switch Camera</button>
-            <button id="capture-btn">Capture</button>
+            <button id="switch-camera-btn">
+                Switch Camera
+            </button>
         </footer>
-    </div>
 
-    <script type="module" src="./js/app.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14"></script>
+        <script type="module" src="./js/app.js"></script>
 </body>
 </html>
