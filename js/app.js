@@ -4,11 +4,18 @@ import {
     drawLandmarks
 } from "./faceTracking.js";
 import { drawGlasses } from "./glasses.js";
+import {
+    initAR,
+    updateGlasses
+} from "./arRenderer.js";
 
 const video = document.getElementById("camera");
 const canvas = document.getElementById("overlay");
 const switchButton = document.getElementById("switch-camera-btn");
 const debugButton = document.getElementById("debug-btn");
+const glassesButton = document.getElementById("glasses-btn");
+
+const threeCanvas = document.getElementById("three-canvas");
 
 const ctx = canvas.getContext("2d");
 
@@ -16,9 +23,20 @@ let currentFacingMode = "user";
 let faceLandmarker = null;
 
 let debugEnabled = false;
+let glassesEnabled = false;
 
 async function updateCamera() {
     await startCamera(video, currentFacingMode);
+    await initAR(
+        threeCanvas
+    );
+
+    updateGlasses(
+        0,
+        0,
+        1,
+        0
+    );
 
     if (currentFacingMode === "user") {
         video.style.transform = "scaleX(-1)";
@@ -63,10 +81,12 @@ async function startFaceTracking() {
                     result.faceLandmarks[0];
 
                 // Draw glasses
-                drawGlasses(
-                    canvas,
-                    landmarks
-                );
+                if (glassesEnabled) {
+                    drawGlasses(
+                        canvas,
+                        landmarks
+                    );
+                }
 
                 // Draw debug dots only when enabled
                 if (debugEnabled) {
@@ -105,6 +125,20 @@ debugButton.addEventListener(
                 canvas.height
             );
         }
+    }
+);
+
+glassesButton.addEventListener(
+    "click",
+    () => {
+
+        glassesEnabled =
+            !glassesEnabled;
+
+        glassesButton.textContent =
+            glassesEnabled
+                ? "Hide Glasses"
+                : "Show Glasses";
     }
 );
 

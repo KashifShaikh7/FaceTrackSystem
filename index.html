@@ -8,18 +8,27 @@
 </head>
 <body>
     <div id="app">
+
         <div class="camera-container">
+
             <video id="camera" autoplay playsinline muted></video>
+            <canvas id="three-canvas"></canvas>
             <canvas id="overlay"></canvas>
+
         </div>
 
         <footer class="bottom-bar">
+
             <button id="switch-camera-btn">
                 Switch Camera
             </button>
             <button id="debug-btn">
-                Hide Dots 
+                Show Dots 
             </button>
+            <button id="glasses-btn">
+                Show Glasses
+            </button>
+
         </footer>
 
         <script type="module" src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14"></script>

@@ -31,6 +31,7 @@ button {
 }
 
 #camera,
+#three-canvas,
 #overlay {
     position: absolute;
     inset: 0;
@@ -39,6 +40,10 @@ button {
     height: 100%;
 
     object-fit: cover;
+}
+
+#three-canvas {
+    pointer-events: none;
 }
 
 #overlay {
